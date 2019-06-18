@@ -1,0 +1,19 @@
+# short-description:
+# long-description:
+
+
+# Note
+# Providing mount point as sourceparams will not update the mount point in fstab.
+# This is because imager plugin updates fstab entries before subdir-as-partition plugin has a chance to update mountpoint
+# Therefore mount points should be specified in base-files fstab
+#
+part  reserved --source dummy --ondisk ${FOUNDATIONOS_STORAGE_DEVICE} --size ${FOUNDATIONOS_ALLH3CC_RESERVED_PART_SIZE} --part-name "reserved"  --extra-space 0
+part  u-boot --source rawcopy  --ondisk ${FOUNDATIONOS_STORAGE_DEVICE} --sourceparams="file=u-boot-sunxi-with-spl.bin" --part-name "u-boot" --size ${FOUNDATIONOS_ALLH3CC_UBOOT_SPL_PART_SIZE} --extra-space=0
+
+#Kernel
+part  boot_a --source bootimg-partition --ondisk ${FOUNDATIONOS_STORAGE_DEVICE} --part-name "boot_a" --size ${FOUNDATIONOS_ALLH3CC_KERNEL_PART_SIZE} --align ${FOUNDATIONOS_PARTITION_ALIGNMENT}
+part  boot_b --source bootimg-partition --ondisk ${FOUNDATIONOS_STORAGE_DEVICE} --part-name "boot_b" --size ${FOUNDATIONOS_ALLH3CC_KERNEL_PART_SIZE} --align ${FOUNDATIONOS_PARTITION_ALIGNMENT}
+
+include foundationos.wks.in
+
+bootloader --ptable ${FOUNDATIONOS_PTABLE_TYPE}

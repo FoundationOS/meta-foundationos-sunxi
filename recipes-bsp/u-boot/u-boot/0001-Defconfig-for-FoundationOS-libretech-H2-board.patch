@@ -1,0 +1,40 @@
+From b7e7be1233bf868d41018806bb3322a93f8fa78d Mon Sep 17 00:00:00 2001
+From: Surej Joseph <surej.aj@gmail.com>
+Date: Sun, 16 Jun 2019 18:49:19 -0500
+Subject: [PATCH] Defconfig for FoundationOS libretech H2+ board.
+
+Support for loading full u-boot from 0x140.
+Adding support for FIT image.
+Adding support for GPT.
+---
+ ...onos_libretech_all_h3_cc_h2_plus_defconfig | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 configs/foundationos_libretech_all_h3_cc_h2_plus_defconfig
+
+diff --git a/configs/foundationos_libretech_all_h3_cc_h2_plus_defconfig b/configs/foundationos_libretech_all_h3_cc_h2_plus_defconfig
+new file mode 100644
+index 0000000000..c31f7cb162
+--- /dev/null
++++ b/configs/foundationos_libretech_all_h3_cc_h2_plus_defconfig
+@@ -0,0 +1,21 @@
++CONFIG_ARM=y
++CONFIG_ARCH_SUNXI=y
++CONFIG_SPL=y
++CONFIG_MACH_SUN8I_H3=y
++CONFIG_DRAM_CLK=672
++CONFIG_DRAM_ZQ=3881979
++CONFIG_DRAM_ODT_EN=y
++CONFIG_MMC_SUNXI_SLOT_EXTRA=2
++CONFIG_NR_DRAM_BANKS=1
++# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
++# CONFIG_CMD_FLASH is not set
++# CONFIG_SPL_DOS_PARTITION is not set
++# CONFIG_SPL_EFI_PARTITION is not set
++CONFIG_DEFAULT_DEVICE_TREE="sun8i-h2-plus-libretech-all-h3-cc"
++CONFIG_SUN8I_EMAC=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_SYS_USB_EVENT_POLL_VIA_INT_QUEUE=y
++CONFIG_FIT=y
++CONFIG_EFI_PARTITION=y
++CONFIG_CMD_GPT=y
++CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR=0x140

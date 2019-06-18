@@ -1,0 +1,49 @@
+From cff4eaaed637c79949167d4b95c64a28a934e702 Mon Sep 17 00:00:00 2001
+From: Surej Joseph <surej.aj@gmail.com>
+Date: Sun, 16 Jun 2019 18:55:11 -0500
+Subject: [PATCH] sunxi: Allow booting from 128KB SD/eMMC offset
+
+On modern Allwinner SoCs (tested: H2+, A64, H5, H6) the BootROM can
+actually load the SPL also from sector 256 (128KB) of an SD card or eMMC
+chip. For more details, see [1].
+In this case the boot source indicator (written at offset 0x28 of SRAM A1)
+has bit 4 set, so it's 0x10 for SD card and 0x12 for eMMC.
+
+Add those new values to the existing boot source check to allow booting
+the SPL from those "high" disk offsets as well. For this to work, the
+value of CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR needs to be adjusted,
+for instance to 0x140 (right after the high SPL). Doing this dynamically
+sounds desirable, but looks nasty to implement.
+---
+ arch/arm/include/asm/arch-sunxi/spl.h | 2 ++
+ arch/arm/mach-sunxi/board.c           | 4 ++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/arch/arm/include/asm/arch-sunxi/spl.h b/arch/arm/include/asm/arch-sunxi/spl.h
+index 55f2deb18d..5df0c46f41 100644
+--- a/arch/arm/include/asm/arch-sunxi/spl.h
++++ b/arch/arm/include/asm/arch-sunxi/spl.h
+@@ -18,6 +18,8 @@
+ #define SUNXI_BOOTED_FROM_NAND	1
+ #define SUNXI_BOOTED_FROM_MMC2	2
+ #define SUNXI_BOOTED_FROM_SPI	3
++#define SUNXI_BOOTED_FROM_MMC0_HIGH        0x10
++#define SUNXI_BOOTED_FROM_MMC2_HIGH        0x12
+ 
+ /* boot head definition from sun4i boot code */
+ struct boot_file_head {
+diff --git a/arch/arm/mach-sunxi/board.c b/arch/arm/mach-sunxi/board.c
+index d22a84ea6b..47f806964c 100644
+--- a/arch/arm/mach-sunxi/board.c
++++ b/arch/arm/mach-sunxi/board.c
+@@ -247,6 +247,10 @@ uint32_t sunxi_get_boot_device(void)
+ 		return BOOT_DEVICE_MMC2;
+ 	case SUNXI_BOOTED_FROM_SPI:
+ 		return BOOT_DEVICE_SPI;
++	case SUNXI_BOOTED_FROM_MMC0_HIGH:
++		return BOOT_DEVICE_MMC1;
++	case SUNXI_BOOTED_FROM_MMC2_HIGH:
++		return BOOT_DEVICE_MMC2;
+ 	}
+ 
+ 	panic("Unknown boot source %d\n", boot_source);

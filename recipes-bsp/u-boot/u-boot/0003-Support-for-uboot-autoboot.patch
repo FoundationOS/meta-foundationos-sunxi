@@ -1,0 +1,57 @@
+From dfdabe3c39fab4e357c4967e84761af0b0327604 Mon Sep 17 00:00:00 2001
+From: Surej Joseph <surej.aj@gmail.com>
+Date: Sun, 16 Jun 2019 19:51:59 -0500
+Subject: [PATCH] Support for uboot autoboot
+
+Setting up default autoboot command for foundationos on libretech
+SBC.
+---
+ ...tionos_libretech_all_h3_cc_h2_plus_defconfig |  1 +
+ include/configs/sunxi-common.h                  | 17 +++++++++++++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/configs/foundationos_libretech_all_h3_cc_h2_plus_defconfig b/configs/foundationos_libretech_all_h3_cc_h2_plus_defconfig
+index c31f7cb162..d5f0db4fc2 100644
+--- a/configs/foundationos_libretech_all_h3_cc_h2_plus_defconfig
++++ b/configs/foundationos_libretech_all_h3_cc_h2_plus_defconfig
+@@ -18,4 +18,5 @@ CONFIG_SYS_USB_EVENT_POLL_VIA_INT_QUEUE=y
+ CONFIG_FIT=y
+ CONFIG_EFI_PARTITION=y
+ CONFIG_CMD_GPT=y
++CONFIG_BOOTCOMMAND="run bootcmd_foundationos"
+ CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR=0x140
+diff --git a/include/configs/sunxi-common.h b/include/configs/sunxi-common.h
+index 9819d9980c..48c668d130 100644
+--- a/include/configs/sunxi-common.h
++++ b/include/configs/sunxi-common.h
+@@ -499,6 +499,21 @@ extern int soft_i2c_gpio_scl;
+ #define FDTFILE CONFIG_DEFAULT_DEVICE_TREE ".dtb"
+ #endif
+ 
++#define BOOTCMD_FOUNDATIONOS \
++	"bootcmd_foundationos=" \
++                "setenv root /dev/mmcblk0p5 rootwait;" \
++                "setenv kernel_part_no 3;" \
++		"if fatload mmc 0:3 0x44000000 uEnv.txt; then " \
++			"echo Loaded environment from uEnv.txt; " \
++			"env import -t 0x44000000 ${filesize}; " \
++		"fi; " \
++		"setenv bootargs console=${console} root=${root} ${extraargs}; " \
++		"fatload mmc 0:${kernel_part_no} ${kernel_addr_r}" \
++		"bootm ${kernel_addr_r}\0"
++
++#define FOUNDATIONOS_EXTRA_ENV_SETTINGS \
++	"kernel_part_no=5\0"
++
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	CONSOLE_ENV_SETTINGS \
+ 	MEM_LAYOUT_ENV_SETTINGS \
+@@ -511,6 +526,8 @@ extern int soft_i2c_gpio_scl;
+ 	"uuid_gpt_system=" UUID_GPT_SYSTEM "\0" \
+ 	"partitions=" PARTS_DEFAULT "\0" \
+ 	BOOTCMD_SUNXI_COMPAT \
++	FOUNDATIONOS_EXTRA_ENV_SETTINGS \
++	BOOTCMD_FOUNDATIONOS \
+ 	BOOTENV
+ 
+ #else /* ifndef CONFIG_SPL_BUILD */
