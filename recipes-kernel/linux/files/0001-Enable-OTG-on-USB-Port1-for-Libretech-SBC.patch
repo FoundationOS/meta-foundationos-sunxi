@@ -1,0 +1,25 @@
+From dd8c7d6d0ab4723c93723161e94d1c3a08a234fc Mon Sep 17 00:00:00 2001
+From: Surej Joseph <surejj1@verifone.com>
+Date: Wed, 19 Jun 2019 17:24:12 +0000
+Subject: [PATCH] Enable OTG on USB Port1 for Libretech SBC
+
+---
+ arch/arm/boot/dts/sunxi-libretech-all-h3-cc.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/sunxi-libretech-all-h3-cc.dtsi b/arch/arm/boot/dts/sunxi-libretech-all-h3-cc.dtsi
+index 1eadc1323..162ceebfb 100644
+--- a/arch/arm/boot/dts/sunxi-libretech-all-h3-cc.dtsi
++++ b/arch/arm/boot/dts/sunxi-libretech-all-h3-cc.dtsi
+@@ -210,7 +210,7 @@
+ };
+ 
+ &usb_otg {
+-	dr_mode = "host";
++	dr_mode = "otg";
+ 	status = "okay";
+ };
+ 
+-- 
+2.17.1
+
